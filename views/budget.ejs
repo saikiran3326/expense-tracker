@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget - Expense Tracker</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #f7f9fb;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #FF9F00;
+            color: white;
+            padding-top: 40px;
+        }
+
+        .sidebar a {
+            color: white;
+            font-size: 1.1rem;
+            padding: 15px 25px;
+            display: block;
+            text-decoration: none;
+        }
+
+        .sidebar a:hover {
+            background-color: #FF5722;
+            border-radius: 5px;
+        }
+
+        /* Dashboard Content */
+        .dashboard-content {
+            margin-left: 250px;
+            padding: 40px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            color: #333;
+        }
+
+        /* Budget Form */
+        .budget-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .budget-form h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            padding: 10px;
+        }
+
+        /* Budget Table */
+        .budget-table {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        .budget-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .budget-table th, .budget-table td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .budget-table th {
+            background-color: #FF9F00;
+            color: white;
+        }
+
+        .budget-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        /* Graph Containers */
+        .graph-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .graph-container canvas {
+            width: 45%;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h3 class="text-center">Expense Tracker</h3>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/money">Transactions</a>
+        <a href="/budget">Budget</a>
+        <a href="/loans">Loans</a>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-content">
+        <div class="dashboard-header">
+            <h1>Manage Budget</h1>
+        </div>
+
+        <!-- Budget Form Section -->
+        <div class="budget-form">
+            <h3>Set Your Budget</h3>
+            <form id="budget-form" action="/budget" method="POST">
+                <div class="form-group">
+                    <label for="food-budget">Food</label>
+                    <input name="food" type="number" class="form-control" id="food-budget" placeholder="Enter food budget" required>
+                </div>
+                <div class="form-group">
+                    <label for="entertainment-budget">Entertainment</label>
+                    <input name="entertainment" type="number" class="form-control" id="entertainment-budget" placeholder="Enter entertainment budget" required>
+                </div>
+                <div class="form-group">
+                    <label for="transport-budget">Transport</label>
+                    <input name="transport" type="number" class="form-control" id="transport-budget" placeholder="Enter transport budget" required>
+                </div>
+                <div class="form-group">
+                    <label for="bills-budget">Bills</label>
+                    <input  name="bills" type="number" class="form-control" id="bills-budget" placeholder="Enter bills budget" required>
+                </div>
+                <div class="form-group">
+                    <label for="other-budget">Other</label>
+                    <input name="other" type="number" class="form-control" id="other-budget" placeholder="Enter other budget" required>
+                </div>
+                <button  value="submit" type="submit" class="btn btn-primary">Set Budget</button>
+            </form>
+        </div>
+
+        <!-- Graph Section -->
+        <div class="graph-container">
+            <!-- Budget and Spent Bar Chart -->
+            <canvas id="budgetSpentChart"></canvas>
+
+            <!-- Budget Remaining Doughnut Chart -->
+            <!-- <canvas id="remainingBudgetChart"></canvas> -->
+        </div>
+        <!-- Budget Table Section -->
+        <div class="budget-table">
+            <h3>Current Budget Overview</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Set Budget</th>
+                        <th>Spent</th>
+                        <th>Remaining</th>
+                    </tr>
+                </thead>
+                <tbody id="budget-table-body">
+                    <tr>
+                        <td>Food</td>
+                        <td id="food-budget-display">₹<%=data[0].food%></td>
+                        <td id="food-spent">₹<%=data1[0].sum%></td>
+                        <td id="food-remaining">₹0</td>
+                    </tr>
+                    <tr>
+                        <td>Entertainment</td>
+                        <td id="entertainment-budget-display"><%=data[0].entertainment%></td>
+                        <td id="entertainment-spent">₹<%=data2[0].sum%></td>
+                        <td id="entertainment-remaining">₹0</td>
+                    </tr>
+                    <tr>
+                        <td>Transport</td>
+                        <td id="transport-budget-display"><%=data[0].transport%></td>
+                        <td id="transport-spent">₹<%=data3[0].sum%></td>
+                        <td id="transport-remaining">₹0</td>
+                    </tr>
+                    <tr>
+                        <td>Bills</td>
+                        <td id="bills-budget-display">₹<%=data[0].bills%></td>
+                        <td id="bills-spent">₹<%=data4[0].sum%></td>
+                        <td id="bills-remaining">₹0</td>
+                    </tr>
+                    <tr>
+                        <td>Other</td>
+                        <td id="other-budget-display">₹<%=data[0].other%></td>
+                        <td id="other-spent">₹<%=data5[0].sum%></td>
+                        <td id="other-remaining">₹0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS & Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+
+    <!-- Custom Script for Budget Management -->
+    <script>
+        // document.getElementById('budget-form').addEventListener('submit', function(event) {
+        //     event.preventDefault();
+
+
+        //     // Set budget display
+        //     document.getElementById('food-budget-display').innerText = '₹' + foodBudget;
+        //     document.getElementById('entertainment-budget-display').innerText = '₹' + entertainmentBudget;
+        //     document.getElementById('transport-budget-display').innerText = '₹' + transportBudget;
+        //     document.getElementById('bills-budget-display').innerText = '₹' + billsBudget;
+        //     document.getElementById('other-budget-display').innerText = '₹' + otherBudget;
+
+        //     // Set default spent amounts (can be dynamically updated later)
+        //     const foodSpent = 20;
+        //     const entertainmentSpent = 40;
+        //     const transportSpent = 12;
+        //     const billsSpent = 56;
+        //     const otherSpent = 500;
+
+        //     document.getElementById('food-spent').innerText = '₹' + foodSpent;
+        //     document.getElementById('entertainment-spent').innerText = '₹' + entertainmentSpent;
+        //     document.getElementById('transport-spent').innerText = '₹' + transportSpent;
+        //     document.getElementById('bills-spent').innerText = '₹' + billsSpent;
+        //     document.getElementById('other-spent').innerText = '₹' + otherSpent;
+        let otherBudget = parseFloat('<%= data[0].other %>');
+let otherSpent = parseFloat('<%= data5[0].sum %>');
+
+// Calculate remaining budget
+let otherRemaining = otherBudget - otherSpent;
+
+// Update the display for remaining budget
+document.getElementById('other-remaining').innerText = '₹' + otherRemaining;
+
+             document.getElementById('food-remaining').innerText = '₹' + (parseFloat('<%= data[0].food %>') - parseFloat('<%= data1[0].sum %>'));
+             document.getElementById('entertainment-remaining').innerText = '₹' + (parseFloat('<%= data[0].entertainment %>') - parseFloat('<%= data2[0].sum %>'));
+             document.getElementById('transport-remaining').innerText = '₹' + (parseFloat('<%= data[0].transport %>') - parseFloat('<%= data3[0].sum %>'));
+            document.getElementById('bills-remaining').innerText = '₹' + (parseFloat('<%= data[0].bills %>') - parseFloat('<%= data4[0].sum %>'));
+
+            // Budget Data for Bar Chart (Total vs Spent)
+            const budgetData = {
+                labels: ['Food', 'Entertainment', 'Transport', 'Bills', 'Other'],
+                datasets: [
+                    {
+                        label: 'Total Budget',
+                        data: [parseFloat('<%= data[0].food %>'),parseFloat('<%= data[0].entertainment %>'),parseFloat('<%= data[0].transport %>'),parseFloat('<%= data[0].bills %>'),parseFloat('<%= data[0].other %>')],
+                        backgroundColor: '#FF9F00',
+                        borderColor: '#FF5722',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Spent Amount',
+                        data: [parseFloat('<%= data1[0].sum %>'), parseFloat('<%= data2[0].sum %>'),parseFloat('<%= data3[0].sum %>'),parseFloat('<%= data4[0].sum %>'),parseFloat('<%= data5[0].sum %>')],
+                        backgroundColor: '#4CAF50',
+                        borderColor: '#388E3C',
+                        borderWidth: 1
+                    }
+                ]
+            };
+
+            // Update Bar Chart
+            const ctx1 = document.getElementById('budgetSpentChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'bar',
+                data: budgetData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Budget Data for Doughnut Chart (Remaining Budget)
+            const remainingData = {
+                labels: ['Food', 'Entertainment', 'Transport', 'Bills', 'Other'],
+                datasets: [{
+                    label: 'Remaining Budget',
+                    data: [
+                    (parseFloat('<%= data[0].food %>') - parseFloat('<%= data1[0].sum %>')),
+                    (parseFloat('<%= data[0].entertainment %>') - parseFloat('<%= data2[0].sum %>')),
+                    (parseFloat('<%= data[0].transport %>') - parseFloat('<%= data3[0].sum %>')),
+                    (parseFloat('<%= data[0].bills %>') - parseFloat('<%= data4[0].sum %>')),
+                        otherRemaining
+                    ],
+                    backgroundColor: '#FF9F00',
+                    borderColor: '#FF5722',
+                    borderWidth: 1
+                }]
+            };
+
+            // Update Doughnut Chart
+            const ctx2 = document.getElementById('remainingBudgetChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: remainingData
+            });
+    </script>
+
+</body>
+</html>

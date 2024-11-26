@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expenses & Loans - Expense Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #f7f9fb;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #FF9F00;
+            color: white;
+            padding-top: 40px;
+        }
+
+        .sidebar a {
+            color: white;
+            font-size: 1.1rem;
+            padding: 15px 25px;
+            display: block;
+            text-decoration: none;
+        }
+
+        .sidebar a:hover {
+            background-color: #FF5722;
+            border-radius: 5px;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 40px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #333;
+        }
+
+        .header .btn {
+            background-color: #FF5722;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: none;
+        }
+
+        .header .btn:hover {
+            background-color: #FF9F00;
+        }
+
+        .table-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .table th, .table td {
+            text-align: center;
+            padding: 12px;
+        }
+
+        .table thead {
+            background-color: #FF5722;
+            color: white;
+        }
+
+        .table tbody tr:hover {
+            background-color: #FF9F00;
+        }
+        .chart-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+
+        .chart-box {
+            width: 48%;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-box canvas {
+            width: 100% !important;
+            height: 300px !important;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .content {
+                margin-left: 200px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .content {
+                margin-left: 0;
+            }
+            .chart-container {
+                flex-direction: column;
+            }
+            .chart-box {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+
+    <div class="sidebar">
+        <h3 class="text-center">Expense Tracker</h3>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/money">Transactions</a>
+        <a href="/budget">Budget</a>
+        <a href="/loans">Loans</a>
+    </div>
+
+    <div class="content">
+        <div class="header">
+            <h1>Manage Expenses & Loans</h1>
+            <button class="btn" data-bs-toggle="modal" data-bs-target="#addExpenseModal">Add Expense</button>
+            <button class="btn" data-bs-toggle="modal" data-bs-target="#addLoanModal">Add Loan</button>
+        </div>
+
+        <div class="table-container">
+            <h3>Expenses</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                     <%expense.forEach((item) => { %>
+                        <tr>
+                            <td><%= item.id %></td>
+                            <td><%= item.category %></td>
+                            <td>₹<%= item.amount %></td>
+                            <td><%= item.description %></td>
+                            <td><%= new Date(item.date).toISOString().split('T')[0]  %></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-container mt-4">
+            <h3>Loans (Money Lent)</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Person</th>
+                        <th>Amount Lent</th>
+                        <th>Due Date</th>
+                        <th>Amount Due</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                     <% moneylent.forEach((item) => { %>
+                        <tr>
+                            <td><%= item.id %></td>
+                            <td><%= item.person %></td>
+                            <td>₹<%= item.amount %></td>
+                            <td><%= new Date(item.duedate).toISOString().split('T')[0]  %></td>
+                            <td>₹<%= item.amountdue %></td>
+                            <td>
+                                <form action="money/delete/<%= item.id %>" method="GET">
+                                    <button class="btn btn-sm btn-success" type="submit">Mark as Paid</button>
+                                </form>
+                                <form action="money/edit/<%= item.id %>" method="GET">
+                                    <button class="btn btn-sm btn-info" type="submit">edit it</button>
+                                </form>
+                            </td>
+                        
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-box">
+                <h4>Expenses by Category</h4>
+                <canvas id="expenseChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h4>Loan Due Amounts</h4>
+                <canvas id="loanChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addExpenseModal" tabindex="-1" aria-labelledby="addExpenseModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addExpenseModalLabel">Add Expense</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/expense" method="post">
+                <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="expenseCategory" class="form-label">Category</label>
+                            <input name="category" type="text" class="form-control" id="expenseCategory" placeholder="Enter category (e.g., Food, Rent)">
+                        </div>
+                        <div class="mb-3">
+                            <label for="expenseAmount" class="form-label">Amount</label>
+                            <input name="amount" type="number" class="form-control" id="expenseAmount" placeholder="Enter amount">
+                        </div>
+                        <div class="mb-3">
+                            <label for="expenseDescription" class="form-label">Description</label>
+                            <textarea name="description" class="form-control" id="expenseDescription" placeholder="Enter description"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="expenseDate" class="form-label">Date</label>
+                            <input name="date" type="date" class="form-control" id="expenseDate">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Expense</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addLoanModal" tabindex="-1" aria-labelledby="addLoanModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addLoanModalLabel">Add Loan (Money Lent)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/moneylent" method="post">
+                <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="loanPerson" class="form-label">Person</label>
+                            <input name="person" type="text" class="form-control" id="loanPerson" placeholder="Enter name of person">
+                        </div>
+                        <div class="mb-3">
+                            <label for="loanAmount" class="form-label">Amount Lent</label>
+                            <input name="amount" type="number" class="form-control" id="loanAmount" placeholder="Enter amount lent">
+                        </div>
+                        <div class="mb-3">
+                            <label for="loanDueDate" class="form-label">Due Date</label>
+                            <input name="duedate" type="date" class="form-control" id="loanDueDate">
+                        </div>
+                        <div class="mb-3">
+                            <label for="loanAmountDue" class="form-label">Amount Due</label>
+                            <input name="amountdue" type="number" class="form-control" id="loanAmountDue" placeholder="Enter amount due">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Loan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const expenseChartCtx = document.getElementById('expenseChart').getContext('2d');
+        const loanChartCtx = document.getElementById('loanChart').getContext('2d');
+
+        const expenseChart = new Chart(expenseChartCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Food', 'Entertainment', 'Transport', 'bills','other'],
+            datasets: [{
+                label: 'Expense Categories (in ₹)',
+                data: [parseFloat('<%= data1[0].sum %>'), parseFloat('<%= data2[0].sum %>'),parseFloat('<%= data3[0].sum %>'),parseFloat('<%= data4[0].sum %>'),parseFloat('<%= data5[0].sum %>')],
+                backgroundColor: ['#FF5722', '#FF9F00', '#4CAF50', '#2196F3', '#9C27B0'],
+                hoverOffset: 4
+            }]
+            }
+        });
+        var persons = JSON.parse('<%- JSON.stringify(persons) %>');
+        var amountdue=JSON.parse('<%-JSON.stringify(amountdue)%>');
+        console.log(amountdue);
+        const loanChart = new Chart(loanChartCtx, {
+            type: 'bar',
+            data: {
+                labels:persons,
+                datasets: [{
+                    label: 'Loan Due Amounts',
+                    data: amountdue,
+                    backgroundColor: '#FF5722',
+                    borderWidth: 1
+                }]
+            }
+        });
+    </script>
+</body>
+</html>

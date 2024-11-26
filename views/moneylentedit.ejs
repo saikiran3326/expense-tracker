@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Edit money lent Details</h1>
+    <form action="/money/edit/<%=moneylent.id%>" method="post">
+        <div class="modal-body">
+                <div class="mb-3">
+                    <label for="loanPerson" class="form-label">Person</label>
+                    <input name="person" type="text" class="form-control" id="loanPerson" placeholder="Enter name of person" value="<%=moneylent.person%>">
+                </div>
+                <div class="mb-3">
+                    <label for="loanAmount" class="form-label">Amount Lent</label>
+                    <input name="amount" type="number" class="form-control" id="loanAmount" placeholder="Enter amount lent"value="<%=moneylent.amount%>">
+                </div>
+                <div class="mb-3">
+                    <label for="loanDueDate" class="form-label">Due Date</label>
+                    <input name="duedate" type="date" class="form-control" id="loanDueDate" value="<%=moneylent.duedate%>">
+                </div>
+                <div class="mb-3">
+                    <label for="loanAmountDue" class="form-label">Amount Due</label>
+                    <input name="amountdue" type="number" class="form-control" id="loanAmountDue" placeholder="Enter amount due" value="<%=moneylent.amountdue%>">
+                </div>
+                <button type="submit" class="btn btn-primary">modify lent</button>
+            </form>
+            </div>
+</body>
+</html>
