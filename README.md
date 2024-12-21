@@ -18,10 +18,21 @@ everything will be with the visualistaions so everyone can came to conclusions e
   <li>chart.js -charts</li>
 </ul>
 <h3>here is the home page</h3>
-![Screenshot 2024-12-20 181737](https://github.com/user-attachments/assets/5a6467a5-5104-438f-961d-d161c222c6ac)
-![Screenshot 2024-12-20 181823](https://github.com/user-attachments/assets/4ea26b98-0806-40bd-8156-42db892f3815)
-![Screenshot 2024-12-20 181834](https://github.com/user-attachments/assets/8c9cec68-0ec3-4c62-839f-214188f6103a)
-<h3>dashbaord</h3>
+
+![localhost_3000_](https://github.com/user-attachments/assets/329f7a58-dfe6-4236-939b-0132ec7ac4a3)
+<h3>dashboard</h3>
 <p>here we can view the total moeny earned and used and remaining</p>
-![Screenshot 2024-12-20 181958](https://github.com/user-attachments/assets/08ef066e-7852-4e46-a4f1-a0afb938bfbf)
-![Screenshot 2024-12-20 181944](https://github.com/user-attachments/assets/bae3bf6b-8b91-4432-a316-3f6e01620672)
+
+![localhost_3000_dashboard](https://github.com/user-attachments/assets/17059d9e-7a07-4af9-ab52-b9e947b4324f)
+<h3>budget</h3>
+
+![Screenshot_21-12-2024_205235_localhost](https://github.com/user-attachments/assets/e354fab0-1645-48df-9bbd-aa8775cd5c85)
+<h3>transcations and money lents</h3>
+
+![Screenshot_21-12-2024_205031_localhost](https://github.com/user-attachments/assets/9fa93dbd-7d8f-4021-8cbb-bb8ce845d82c)
+
+<h3>loans</h3>
+
+![localhost_3000_loans](https://github.com/user-attachments/assets/1c8c613c-e916-441a-ae74-1792a21ca1b2)
+
+
